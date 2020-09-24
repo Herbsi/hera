@@ -76,7 +76,7 @@ add-meal-to-omnifocus"
 (define (write-list-to-file lst path)
   "Writes lst to path, separated by newlines"
   (call-with-output-file path
-    #:exists 'truncate
+    #:exists 'append
     (lambda (out)
       (for-each (lambda (item) (display item out) (display "\n" out))
                 lst))))
