@@ -112,13 +112,14 @@ add-meal-to-omnifocus"
                             of-args)
                   (write-list-to-file ingredients ingredients-tmp)))
               ck-days)
-    (display "Added Cooking Tasks to Omnifocus\n")
-    (display (format "Ingredients successfully written to ~a\n" ingredients-tmp))
-    (display "Edit the Ingredients List and press enter once you're done.\n> ")
+    (displayln "Added Cooking Tasks to Omnifocus")
+    (displayln (format "Ingredients successfully written to ~a" ingredients-tmp))
+    (displayln "Edit the Ingredients List and press enter once you're done.")
+    (display "> ")
     (read-line)
     ;; Read ingredients back in and add to reminders
     (for-each (lambda (ingredient) (add-item-to-reminders ingredient))
               (read-list-from-file ingredients-tmp))
-    (display "Added Ingredients to Reminders")))
+    (displayln "Added Ingredients to Reminders.")))
 
 (main)
