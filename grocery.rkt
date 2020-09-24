@@ -3,14 +3,15 @@
 #lang racket/base
 
 (require "lib.rkt")
+(require "omnifocus.rkt")
 
 (define mealplan (string->path "/Users/herwig/Notes/Meal Plan.md"))
 (define ingredients-tmp (string->path "/tmp/ingredients"))
 
 (let ([ck-days (mealplan->cook-days mealplan)])
-    (for-each (lambda (day)
-                (let ([of-args (make-of-arg-list day)]
-                      [ingredients (cook-day->ingredients day)])
+  (for-each (lambda (day)
+              (let ([of-args (make-of-arg-list day)]
+                    [ingredients (cook-day->ingredients day)])
 
                   ;; Add Tasks to OF and write ingredients to file
                   (for-each (lambda (arg-set)
