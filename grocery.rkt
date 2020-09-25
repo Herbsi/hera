@@ -2,31 +2,29 @@
 
 #lang racket/base
 
-(require "lib.rkt")
-(require "omnifocus.rkt")
+(require "mealplan.rkt")
+(require "schedule.rkt")
+(require "ingredients.rkt")
 
-(define mealplan (string->path "/Users/herwig/Notes/Meal Plan.md"))
+(define mealplan-path (string->path "/Users/herwig/Notes/Meal Plan.md"))
+(define recipe-location (string->path "/Users/herwig/Notes/Recipes/"))
+(define recipe-ext ".md")
 (define ingredients-tmp (string->path "/tmp/ingredients"))
 
-(let ([ck-days (mealplan->cook-days mealplan)])
-  (for-each (lambda (day)
-              (let ([of-args (make-of-arg-list day)]
-                    [ingredients (cook-day->ingredients day)])
+(let* ([mealplan (path->mealplan mealplan-path)]
+       [schedule (mealplan->schedule mealplan)]
+       [ingredients (mealplan->ingredients mealplan recipe-location recipe-ext)])
+  (add-schedule-to-omnifocus schedule)
+  (displayln "Added Cooking Tasks to Omnifocus")
 
-                  ;; Add Tasks to OF and write ingredients to file
-                  (for-each (lambda (arg-set)
-                              (apply add-meal-to-omnifocus arg-set))
-                            of-args)
-                  (write-list-to-file ingredients ingredients-tmp)))
-              ck-days)
-    (displayln "Added Cooking Tasks to Omnifocus")
-    (displayln (format "Ingredients successfully written to ~a" ingredients-tmp))
-    (displayln "Edit the Ingredients List and press enter once you're done.")
-    (display "> ")
-    (read-line)
+  ;; Write ingrediens to temporary file
+  (write-list-to-file ingredients ingredients-tmp)
+  (displayln (format "Ingredients successfully written to ~a" ingredients-tmp))
+  (displayln "Edit the Ingredients List and press enter once you're done.")
+  (display "> ")
+  (read-line)
 
-    ;; Read ingredients back in and add to Reminders
-    (for-each (lambda (ingredient)
-                (add-item-to-reminders ingredient))
-              (read-list-from-file ingredients-tmp))
-    (displayln "Added Ingredients to Reminders."))
+  ;; Read ingredients back in and add to Reminders
+  (for ([item (read-list-from-file ingredients-tmp)])
+    (add-item-to-reminders item))
+  (displayln "Added Ingredients to Reminders."))
