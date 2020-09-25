@@ -3,6 +3,8 @@
 (require racket/list)
 (require racket/system)
 
+(require anaphoric)
+
 (require "mealplan.rkt")
 
 (provide mealplan->ingredients
@@ -30,10 +32,15 @@
                         (cadr
                          ;; extracts the block with only the relevant ingredients
                          (regexp-match #px"Ingredients\\S*\n+((?m:\\*.+\\\n)+)" content)))))
-  (call-with-input-file
-      (build-path recipe-location
-                  (string-append meal recipe-ext))
-    content->ingredients))
+  (let ([result null])
+    (let iter ([meal meal])
+      (for ([item (call-with-input-file
+                      (build-path recipe-location (string-append meal recipe-ext))
+                    content->ingredients)])
+        (aif (regexp-match #px"[[]{2}(.*?)[]]{2}" item)
+             (iter (cadr it))
+             (set! result (cons item result)))))
+    result))
 
 
 (define (write-list-to-file lst path)
