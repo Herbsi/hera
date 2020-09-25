@@ -31,7 +31,8 @@
          (regexp-match* #rx"(?m:(?<=\\* ).+)"
                         (cadr
                          ;; extracts the block with only the relevant ingredients
-                         (regexp-match #px"Ingredients\\S*\n+((?m:\\*.+\\\n)+)" content)))))
+                         (regexp-match #px"(?<=## )Ingredients(?: ##)?\\S*\n+((?m:\\*.+\\\n)+)"
+                                       content)))))
   (let ([result null])
     (let iter ([meal meal])
       (for ([item (call-with-input-file
