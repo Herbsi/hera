@@ -34,8 +34,8 @@
   (define (content->ingredients content)
     (map bytes->string/utf-8
          (regexp-match* #rx"(?m:(?<=\\* ).+)"
-                        (car
-                         (regexp-match #px"(?<=Ingredients\n)(?m:\\*.+\\\n)+"
+                        (cadr
+                         (regexp-match #px"(?:Ingredients.+?\n+)((?m:\\*.+\\\n)+)"
                                        content)))))
   ;; TODO remove this absolute path
   (let ([recipe-root (string->path "/Users/herwig/Notes/Recipes")]
