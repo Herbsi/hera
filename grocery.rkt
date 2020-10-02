@@ -17,6 +17,9 @@
   (add-schedule-to-omnifocus schedule)
   (displayln "Added Cooking Tasks to Omnifocus")
 
+  (add-schedule-to-notes schedule)
+  (displayln "Added Schedule to Notes")
+
   ;; Write ingrediens to temporary file
   (write-list-to-file ingredients ingredients-tmp)
   (displayln (format "Ingredients successfully written to ~a" ingredients-tmp))

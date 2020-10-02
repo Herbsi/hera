@@ -13,8 +13,7 @@
          read-list-from-file)
 
 (define (mealplan->recipes mp)
-  (remove-duplicates (apply append
-                            (hash-values (mealplan-dict mp)))))
+  (remove-duplicates (apply append (hash-values (mealplan-dict mp)))))
 
 
 (define (mealplan->ingredients mp recipe-location recipe-ext)
@@ -39,7 +38,7 @@
                       (build-path recipe-location (string-append meal recipe-ext))
                     content->ingredients)])
         (aif (regexp-match #px"[[]{2}(.*?)[]]{2}" item)
-             (iter (cadr it))
+             (iter (second it))         ; gets the captured group
              (set! result (cons item result)))))
     result))
 
