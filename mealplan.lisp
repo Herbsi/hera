@@ -2,36 +2,34 @@
 
 (in-package #:hera)
 
-(defparameter *mealplan* (uiop:read-file-string "~/Notes/Meal Plan.md"))
-
 (defclass/std mealplan ()
-  ((meals :ri)))
+  ((meals :std (make-hash-table :test #'eq))))
 
 
 (defclass/std meal ()
-  ((name :ri)
-   (kind :ri :std :lunch)))
+  ((recipe :ri)
+   (kind :ri :std :lunch)
+   (apple-notes :ri :std t)
+   (devonthink :ri)))
 
 
-(defun extract-meals-on-day (mealplan-string day)
-  "For a given `day', extracts the meals being cooked on that day
-and returns a vector of corresponding meal objects."
-  (multiple-value-bind (_ meals)
-      (ppcre:scan-to-strings (str:concat "# " day "\\s*\\n((?:[-*] .*?\\n)+)")
-                             mealplan-string)
-    (declare (ignore _))
-    (unless (null meals)
-      (gmap :vector #'make-meal (:list (str:split #\Newline (aref meals 0)
-                                                  :omit-nulls t))))))
-
-(defun make-meal (meal-line)
+(defun make-meal (recipe-filename &key (kind :lunch) (apple-notes t) (devonthink nil))
   "Takes a meal line and returns a meal object based on it."
-  (make-instance 'meal :name (subseq meal-line 2)))
+  (assert (member kind '(:lunch :dinner :bake)))
+  (make-instance 'meal :recipe (make-recipe (cl-fad:merge-pathnames-as-file *recipe-root* recipe-filename))
+                       :kind kind
+                       :apple-notes apple-notes
+                       :devonthink devonthink))
 
 
-(defun make-mealplan (mealplan-string)
-  (let ((meals (make-hash-table :test #'eq)))
-    (dolist (day '("Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday" "Sunday"))
-      (setf (gethash (make-keyword day) meals)
-            (extract-meals-on-day mealplan-string day)))
-    (make-instance 'mealplan :meals meals)))
+(defun make-mealplan ()
+  (make-instance 'mealplan))
+
+
+(defun add-meal (meal mealplan day)
+  "Adds `meal' to `mealplan' on `day' if it’s not already present.
+
+Assums `day' is a keyword for a weekday."
+  (with-accessors (meals meals) mealplan
+    (setf (gethash day meals)
+          (fset:adjoinf (gethash day meals) meal))))

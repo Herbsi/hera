@@ -6,8 +6,12 @@
   :license  "MIT"
   :version "0.0.1"
   :serial t
-  :depends-on (#:cl-ppcre
-               #:defclass-std #:iterate #:misc-extensions #:str)
+  :depends-on (#:alexandria
+               #:cl-fad
+               #:cl-ppcre
+               #:defclass-std
+               #:fset
+               #:iterate #:misc-extensions #:str)
   :components ((:file "package")
                (:file "hera" :depends-on ("package"))
                (:file "recipe" :depends-on ("package"))

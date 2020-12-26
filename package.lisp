@@ -4,6 +4,9 @@
   (:use #:cl #:iter)
   #+sb-package-locks
   (:lock t)
+  (:import-from #:alexandria
+                #:mappend
+                #:with-gensyms)
   (:import-from #:defclass-std
                 #:defclass/std)
   (:import-from #:gmap
