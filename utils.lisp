@@ -10,3 +10,10 @@
     (aref title 0)))
 
 
+(defun make-keyword (string)
+  "Returns a keyword from string.  Upcase string first so that
+
+(eq :foo (make-keyword \"foo\")) => T"
+  (alexandria:make-keyword (str:upcase string)))
+
+
