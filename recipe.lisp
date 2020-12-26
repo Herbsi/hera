@@ -4,6 +4,7 @@
 
 (defclass/std recipe ()
   ((name :ri)
+   (filename :ri)
    (ingredients :ri)))
 
 
@@ -28,6 +29,9 @@ removes leading ‘*’:
                             :omit-nulls t)))))
 
 
-(defun make-recipe (recipe-string)
-  (make-instance 'recipe :name (extract-title recipe-string)
-                         :ingredients (extract-ingredients recipe-string)))
+(defun make-recipe (recipe-path)
+  "Creates a recipe object from the recipe at `recipe-path'"
+  (let ((recipe-string (uiop:read-file-string recipe-path)))
+    (make-instance 'recipe :name (extract-title recipe-string)
+                           :ingredients (extract-ingredients recipe-string)
+                           :filename (file-namestring recipe-path))))
