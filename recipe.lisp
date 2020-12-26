@@ -2,6 +2,8 @@
 
 (in-package #:hera)
 
+(defparameter *recipe-root* #P"~/Notes/Recipes/")
+
 (defclass/std recipe ()
   ((name :ri)
    (filename :ri)

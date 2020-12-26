@@ -11,8 +11,12 @@
                #:cl-ppcre
                #:defclass-std
                #:fset
-               #:iterate #:misc-extensions #:str)
+               #:inferior-shell
+               #:iterate
+               #:misc-extensions
+               #:str)
   :components ((:file "package")
                (:file "hera" :depends-on ("package"))
+               (:file "mealplan" :depends-on ("package"))
                (:file "recipe" :depends-on ("package"))
                (:file "utils" :depends-on ("package"))))

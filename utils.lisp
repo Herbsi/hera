@@ -17,3 +17,11 @@
   (alexandria:make-keyword (str:upcase string)))
 
 
+(defun xml-header (string &optional (level 1))
+  "Wraps `string' into an xml-header format."
+  (format nil "~&<div><h~A>~A</h~a></div>~%" level string level))
+
+
+(defun xml-unordered-list (list-of-strings)
+  "Turns `list-of-strings' into an unordered xml-list"
+  (format nil "~&<ul>~&~{<li>~A</li>~^~%~}~%</ul>~%" list-of-strings))

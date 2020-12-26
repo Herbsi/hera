@@ -2,6 +2,8 @@
 
 (in-package #:hera)
 
+(defconstant *weekdays* '(:monday :tuesday :wednesday :thursday :friday :saturday :sunday))
+
 (defclass/std mealplan ()
   ((meals :std (make-hash-table :test #'eq))))
 
@@ -29,18 +31,16 @@
   (make-instance 'mealplan
                  :meals
                  (alexandria:alist-hash-table
-                  (mapcar (fn (day) (cons day (fset:empty-set)))
-                          '(:monday :tuesday :wednesday
-                            :thursday :friday :saturday :sunday)))))
+                  (mapcar (fn (day) (list day)) *weekdays*))))
 
 
 (defun add-meal (meal mealplan day)
   "Adds `meal' to `mealplan' on `day' if it’s not already present.
 
 Assums `day' is a keyword for a weekday."
-  (with-accessors (meals meals) mealplan
+  (with-accessors ((meals meals)) mealplan
     (setf (gethash day meals)
-          (fset:adjoinf (gethash day meals) meal))))
+          (cons meal (gethash day meals)))))
 
 
 (defun write-ingredients-to-tmp (mealplan &optional (target #P"/tmp/ingredients"))
@@ -48,9 +48,27 @@ Assums `day' is a keyword for a weekday."
 if it already existis"
   (with-open-file (*standard-output* target :direction :output :if-exists :append)
     (iter (for (nil meals) in-hashtable (meals mealplan))
-      (fset:do-set (meal meals)
+      (dolist ((meal meals))
         (format t "~&~{~A~^~%~}~%" (ingredients (recipe meal)))))))
 
 
 (defun add-mp-to-apple-notes (mealplan note-id)
-  (with-accessors ((meals meals))))
+  "Adds the mealplan to the Apple Note specified by `note-id'
+
+The days are in order, i.e. Monday comes before Tuesday, etc."
+  (flet ((format-meal (day meal)
+           (format nil "~a: ~a" (str:title-case (string day))
+                   (case (kind meal)
+                     (:lunch "Cooks Lunch")
+                     (:dinner "Cooks Dinner")
+                     (:bake "Bakes something")))))
+    (with-accessors ((meals meals)) mealplan
+      (let ((content (iter
+                       (for day in *weekdays*)
+                       (collect (mapcar (fn (meal) (when (apple-notes meal) (format-meal day meal)))
+                                        (gethash day meals))
+                         into result)
+                       (finally (return (format nil "~&~a~a"
+                                                (xml-header "Herwig Cooks")
+                                                (xml-unordered-list (remove nil (alexandria:flatten result)))))))))
+        (inferior-shell:run (format nil "osascript \"Set Body of Note.scpt\" \"~a\" \"~a\"" note-id content))))))
