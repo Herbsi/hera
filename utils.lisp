@@ -25,3 +25,17 @@
 (defun xml-unordered-list (list-of-strings)
   "Turns `list-of-strings' into an unordered xml-list"
   (format nil "~&<ul>~&~{<li>~A</li>~^~%~}~%</ul>~%" list-of-strings))
+
+
+(defun append-list-to-file (file lis)
+  "Appends the list to file, separated by #\Newline"
+  (with-open-file (*standard-output* file :direction :output :if-exists :append)
+    (format t "~&{~A~^~%}~%" list)))
+
+
+(defun read-list-from-file (file &optional (sep #\Newline))
+  "Convenience function for reading a list from file
+
+List should be separated by `sep' in the file"
+  (str:split sep (uiop:read-file-string file) :omit-nulls t))
+

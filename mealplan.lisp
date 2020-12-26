@@ -43,13 +43,11 @@ Assums `day' is a keyword for a weekday."
           (cons meal (gethash day meals)))))
 
 
-(defun write-ingredients-to-tmp (mealplan &optional (target #P"/tmp/ingredients"))
-  "Writes all ingredients on the mealplan to `target', appending to the file
-if it already existis"
-  (with-open-file (*standard-output* target :direction :output :if-exists :append)
-    (iter (for (nil meals) in-hashtable (meals mealplan))
-      (dolist ((meal meals))
-        (format t "~&~{~A~^~%~}~%" (ingredients (recipe meal)))))))
+(defun collect-ingredients (mealplan)
+  "Collects all ingredients into a list"
+  ;; TODO
+  nil
+  )
 
 
 (defun add-mp-to-apple-notes (mealplan note-id)
@@ -72,3 +70,9 @@ The days are in order, i.e. Monday comes before Tuesday, etc."
                                                 (xml-header "Herwig Cooks")
                                                 (xml-unordered-list (remove nil (alexandria:flatten result)))))))))
         (inferior-shell:run (format nil "osascript \"Set Body of Note.scpt\" \"~a\" \"~a\"" note-id content))))))
+
+
+(defun add-mp-to-omnifocus (mealplan)
+  ;; TODO
+  nil
+  )
