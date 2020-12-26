@@ -6,6 +6,7 @@
   :license  "MIT"
   :version "0.0.1"
   :serial t
-  :depends-on (#:cl-ppcre #:iterate #:misc-extensions #:str)
+  :depends-on (#:cl-ppcre
+               #:defclass-std #:iterate #:misc-extensions #:str)
   :components ((:file "package")
                (:file "hera")))
