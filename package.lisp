@@ -12,4 +12,5 @@
                 #:fn)
   (:shadowing-import-from #:new-let
                           #:let)
-  (:export))
+  (:export
+   #:make-recipe))

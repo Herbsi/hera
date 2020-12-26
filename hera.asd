@@ -9,4 +9,6 @@
   :depends-on (#:cl-ppcre
                #:defclass-std #:iterate #:misc-extensions #:str)
   :components ((:file "package")
-               (:file "hera")))
+               (:file "hera" :depends-on ("package"))
+               (:file "recipe" :depends-on ("package"))
+               (:file "utils" :depends-on ("package"))))
