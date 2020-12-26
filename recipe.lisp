@@ -19,11 +19,11 @@ removes leading ‘*’:
 
 
 (defun extract-ingredients (recipe-string)
-  "Returns the ingredients of recipe as a vector of strings"
+  "Returns the ingredients of recipe as a list of strings"
   (multiple-value-bind (_ ingredients)
       (ppcre:scan-to-strings "##? Ingredients\\n((?:.*?\\n)+?)#" recipe-string)
     (declare (ignore _))
-    (gmap :vector #'clean-ingredient-line
+    (gmap :list #'clean-ingredient-line
           (:list (str:split #\Newline
                             (aref ingredients 0)
                             :omit-nulls t)))))
