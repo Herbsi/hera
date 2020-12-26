@@ -1,11 +1,11 @@
 ;;;; hera.asd
 
 (asdf:defsystem #:hera
-  :description "Describe hera here"
-  :author "Your Name <your.name@example.com>"
-  :license  "Specify license here"
+  :description "My Grocery Automation"
+  :author "Herwig Hoehenberger <herwig.hoehenberger@gmail.com>"
+  :license  "MIT"
   :version "0.0.1"
   :serial t
-  :depends-on (#:cl-ppcre #:iterate #:str #:cl-utilities)
+  :depends-on (#:cl-ppcre #:iterate #:misc-extensions #:str)
   :components ((:file "package")
                (:file "hera")))
