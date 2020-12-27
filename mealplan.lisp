@@ -2,7 +2,7 @@
 
 (in-package #:hera)
 
-(defconstant *weekdays* '(:monday :tuesday :wednesday :thursday :friday :saturday :sunday))
+(defparameter *weekdays* '(:monday :tuesday :wednesday :thursday :friday :saturday :sunday))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                                         ;           Meal & Mealplan           ;
