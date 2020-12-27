@@ -131,10 +131,11 @@ i.e. if it’s Sun, Dec 27 2020; then (next-ISO-day :sunday) => \"2021-01-03\""
          (defer-date (day-of-week)
            (format nil "~a 11:00" (next-iso-day day-of-week))))
     (iter (for (day-of-week meals) in-hashtable (meals mealplan))
-      (dolist (meal meals)
-        (let ((task-name (format nil "~a ~a"
+      (iter
+        (for meal in meals)
+        (for task-name = (format nil "~a ~a"
                                  (if (eq (kind meal) :bake) "Bake" "Cook")
                                  (name (recipe meal))))
-              (due-date (meal-due-date meal day-of-week))
-              (defer-date (defer-date day-of-week)))
-          (add-task-to-omnifocus-project task-name project-name due-date defer-date))))))
+        (for due-date = (meal-due-date meal day-of-week))
+        (for defer-date = (defer-date day-of-week))
+        (add-task-to-omnifocus-project task-name project-name due-date defer-date)))))
