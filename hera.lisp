@@ -24,11 +24,11 @@ into a list of (add-meal (make-meal <meal> args) <day>) function calls."
     `(let ((,mealplan (make-mealplan)))
        ,@(mappend (fn (day-list) (transform-day day-list mealplan))
                   body)
-       (add-mp-to-apple-notes ,mealplan "x-coredata://F93C847E-0906-4FFC-881E-472B69BB9B9C/ICNote/p231"))))
+       (mealplan-add-to-apple-notes ,mealplan "x-coredata://F93C847E-0906-4FFC-881E-472B69BB9B9C/ICNote/p261"))))
 
-(hera
-  (Monday
-   ("Spätzlepfanne mit Rosenkohl.md")
-   ("Schoko Gugelhupf.md" :kind :bake :apple-notes nil))
-  (Tuesday
-   ("Schoko-Mandel Kuchen.md" :kind :bake)))
+;; (hera
+;;   (Monday
+;;    ("Spätzlepfanne mit Rosenkohl.md")
+;;    ("Schoko Gugelhupf.md" :kind :bake :apple-notes nil))
+;;   (Tuesday
+;;    ("Schoko-Mandel Kuchen.md" :kind :bake)))

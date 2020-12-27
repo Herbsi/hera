@@ -13,6 +13,7 @@
                #:fset
                #:inferior-shell
                #:iterate
+               #:local-time
                #:misc-extensions
                #:str)
   :components ((:file "package")

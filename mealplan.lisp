@@ -64,7 +64,7 @@ Assums `day' is a keyword for a weekday."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-(defun format-meal-for-apple-note (day meal)
+(defun meal-format-for-apple-note (day meal)
   (format nil "~a: ~a" (str:title-case (string day))
           (case (kind meal)
             (:lunch "Cooks Lunch")
@@ -72,14 +72,14 @@ Assums `day' is a keyword for a weekday."
             (:bake "Bakes something"))))
 
 
-(defun add-mp-to-apple-notes (mealplan note-id)
+(defun mealplan-add-to-apple-notes (mealplan note-id)
   "Adds the mealplan to the Apple Note specified by `note-id'
 
 The days are in order, i.e. Monday comes before Tuesday, etc."
   (with-accessors ((meals meals)) mealplan
     (let ((content (iter
                      (for day in *weekdays*)
-                     (collect (mapcar (fn (meal) (when (apple-notes meal) (format-meal day meal)))
+                     (collect (mapcar (fn (meal) (when (apple-notes meal) (meal-format-for-apple-note day meal)))
                                       (gethash day meals))
                        into result)
                      (finally (return (format nil "~&~a~a"
@@ -116,8 +116,14 @@ i.e. if it’s Sun, Dec 27 2020; then (next-ISO-day :sunday) => \"2021-01-03\""
     (local-time:format-timestring nil adjusted-date :format '(:year #\-
                                                               (:month 2 #\0) #\-
                                                               (:day 2 #\0)))))
-  
-(defun add-mp-to-omnifocus (mealplan)
+
+
+(defun meal-due-time ()
+  ;; TODO
+  nil
+  )
+
+(defun mealplan-add-to-omnifocus (mealplan)
   ;; TODO
   nil
   )
