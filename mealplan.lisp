@@ -117,12 +117,24 @@ i.e. if it’s Sun, Dec 27 2020; then (next-ISO-day :sunday) => \"2021-01-03\""
                                                               (:day 2 #\0)))))
 
 
-(defun meal-due-time ()
-  ;; TODO
-  nil
-  )
+(defun meal-due-time (meal)
+  "Determines the due-time for cooking `meal'"
+  (case (kind meal)
+    (:lunch "12:30")
+    (:dinner "18:00")
+    (:bake "16:30")))
 
-(defun mealplan-add-to-omnifocus (mealplan)
-  ;; TODO
-  nil
-  )
+(defun mealplan-add-to-omnifocus (mealplan project-name)
+  "Adds the `mealplan' the Omnifocus project named `project-name'"
+  (flet ((meal-due-date (meal day-of-week)
+           (format nil "~a ~a" (next-iso-day day-of-week) (meal-due-time meal)))
+         (defer-date (day-of-week)
+           (format nil "~a 11:00" (next-iso-day day-of-week))))
+    (iter (for (day-of-week meals) in-hashtable (meals mealplan))
+      (dolist (meal meals)
+        (let ((task-name (format nil "~a ~a"
+                                 (if (eq (kind meal) :bake) "Bake" "Cook")
+                                 (name (recipe meal))))
+              (due-date (meal-due-date meal day-of-week))
+              (defer-date (defer-date day-of-week)))
+          (add-task-to-omnifocus-project task-name project-name due-date defer-date))))))

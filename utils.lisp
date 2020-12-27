@@ -43,3 +43,9 @@ List should be separated by `sep' in the file"
 (defun set-body-of-apple-note (content note-id)
   "Sets the body of the Apple Note with id `note-id' to `content'"
   (inferior-shell:run (format nil "osascript \"Set Body of Note.scpt\" \"~a\" \"~a\"" note-id content)))
+
+
+(defun add-task-to-omnifocus-project (task-name project-name due-date defer-date)
+  "Adds the task named `task-name' to the project named `project-name' with {due,defer}-date set to `{due,defer}-date'"
+  (inferior-shell:run
+   (format nil "osascript ~{\"~a\"~^ ~}" `("Add Task to Omnifocus.scpt" ,task-name ,project-name ,due-date ,defer-date))))
