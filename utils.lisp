@@ -40,10 +40,11 @@ List should be separated by `sep' in the file"
   (str:split sep (uiop:read-file-string file) :omit-nulls t))
 
 
-(defun execute-osascript (script)
+(defun execute-osascript (script &rest args)
   "Executes `script' which should be an AppleScript string."
   (inferior-shell:run
-   (format nil "osascript ~{-e \"~a\"~^ ~}" (str:split #\Newline script))))
+   (format nil "osascript ~{-e \"~a\"~^ ~}" (str:split #\Newline
+                                                       (apply #'format nil script args)))))
 
 
 (defun set-body-of-apple-note (content note-id)
@@ -57,7 +58,7 @@ List should be separated by `sep' in the file"
 	set note_name to get name of note id note_id
 	set body of note id note_id to \\\"<div><h1>\\\" & note_name & \\\"</h1></div>\\\" & new_body
 end tell"))
-    (execute-osascript (format nil script content note-id))))
+    (execute-osascript script content note-id)))
 
 (defun add-task-to-omnifocus-project (task-name project-name due-date defer-date)
   "Adds the task named `task-name' to the project named `project-name'
@@ -73,9 +74,16 @@ tell application \\\"OmniFocus\\\"
 	end tell
 end tell"))
     (execute-osascript
-     (format nil script task-name project-name due-date defer-date))))
+     script task-name project-name due-date defer-date)))
 
 
 (defun add-item-to-reminders (item-name reminders-list)
   "Adds the item named `item-name' to the reminders list `reminders-list'"
-  (execute-osascript "Add Item to Reminders.scpt" item-name reminders-list))
+  (let ((script "set item_name to \\~s\\
+set list_name to \\~s\\
+tell application \\\"Reminders\\\"
+	make new reminder at list list_name ¬
+		with properties {name:item_name}
+end tell
+"))
+    (execute-osascript script item-name reminders-list)))
