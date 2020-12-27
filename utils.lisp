@@ -42,14 +42,24 @@ List should be separated by `sep' in the file"
 
 (defun execute-osascript (script-name &rest args)
   "Executes the osascript `script-name' with `args'"
+(defun execute-osascript (script)
+  "Executes `script' which should be an AppleScript string."
   (inferior-shell:run
-   (format nil "osascript ~{\"~A\"~^ ~}" (cons script-name args))))
+   (format nil "osascript ~{-e \"~a\"~^ ~}" (str:split #\Newline script))))
 
 
 (defun set-body-of-apple-note (content note-id)
   "Sets the body of the Apple Note with id `note-id' to `content'"
-  (execute-osascript "Set Body of Note.scpt" content note-id))
-
+  ;; We put three backslashes before each quote
+  ;; 1 to escape the quote; 2 more to put an additional backslash there because the script gets
+  ;; passed to the shell, which swallows another backslash to (still) escape the quotes
+  (let ((script "tell application \\\"Notes\\\"
+	set new_body to \\~s\\\
+	set note_id to \\~s\\
+	set note_name to get name of note id note_id
+	set body of note id note_id to \\\"<div><h1>\\\" & note_name & \\\"</h1></div>\\\" & new_body
+end tell"))
+    (execute-osascript (format nil script content note-id))))
 
 (defun add-task-to-omnifocus-project (task-name project-name due-date defer-date)
   "Adds the task named `task-name' to the project named `project-name'
