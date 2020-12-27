@@ -40,8 +40,6 @@ List should be separated by `sep' in the file"
   (str:split sep (uiop:read-file-string file) :omit-nulls t))
 
 
-(defun execute-osascript (script-name &rest args)
-  "Executes the osascript `script-name' with `args'"
 (defun execute-osascript (script)
   "Executes `script' which should be an AppleScript string."
   (inferior-shell:run
@@ -64,8 +62,18 @@ end tell"))
 (defun add-task-to-omnifocus-project (task-name project-name due-date defer-date)
   "Adds the task named `task-name' to the project named `project-name'
 with {due,defer}-date set to `{due,defer}-date'"
-  (execute-osascript
-   "Add Task to Omnifocus.scpt" task-name project-name due-date defer-date))
+  (let ((script "set task_name to \\~s\\
+set project_name to \\~s\\
+set due_date to date \\~s\\
+set defer_date to date \\~s\\
+tell application \\\"OmniFocus\\\"
+	tell default document
+		make new task at (project project_name) ¬
+			with properties {name:task_name, due date:due_date, defer date:defer_date}
+	end tell
+end tell"))
+    (execute-osascript
+     (format nil script task-name project-name due-date defer-date))))
 
 
 (defun add-item-to-reminders (item-name reminders-list)
