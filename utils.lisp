@@ -27,10 +27,10 @@
   (format nil "~&<ul>~&~{<li>~A</li>~^~%~}~%</ul>~%" list-of-strings))
 
 
-(defun append-list-to-file (file lis)
+(defun append-list-to-file (file list)
   "Appends the list to file, separated by #\Newline"
-  (with-open-file (*standard-output* file :direction :output :if-exists :append)
-    (format t "~&{~A~^~%}~%" list)))
+  (with-open-file (*standard-output* file :direction :output :if-exists :append :if-does-not-exist :create)
+    (format t "~&~{~A~^~%~}~%" list)))
 
 
 (defun read-list-from-file (file &optional (sep #\Newline))
