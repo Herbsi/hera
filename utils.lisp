@@ -39,3 +39,7 @@
 List should be separated by `sep' in the file"
   (str:split sep (uiop:read-file-string file) :omit-nulls t))
 
+
+(defun set-body-of-apple-note (content note-id)
+  "Sets the body of the Apple Note with id `note-id' to `content'"
+  (inferior-shell:run (format nil "osascript \"Set Body of Note.scpt\" \"~a\" \"~a\"" note-id content)))

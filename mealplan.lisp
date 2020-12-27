@@ -50,26 +50,28 @@ Assums `day' is a keyword for a weekday."
   )
 
 
+(defun format-meal-for-apple-note (day meal)
+  (format nil "~a: ~a" (str:title-case (string day))
+          (case (kind meal)
+            (:lunch "Cooks Lunch")
+            (:dinner "Cooks Dinner")
+            (:bake "Bakes something"))))
+
+
 (defun add-mp-to-apple-notes (mealplan note-id)
   "Adds the mealplan to the Apple Note specified by `note-id'
 
 The days are in order, i.e. Monday comes before Tuesday, etc."
-  (flet ((format-meal (day meal)
-           (format nil "~a: ~a" (str:title-case (string day))
-                   (case (kind meal)
-                     (:lunch "Cooks Lunch")
-                     (:dinner "Cooks Dinner")
-                     (:bake "Bakes something")))))
-    (with-accessors ((meals meals)) mealplan
-      (let ((content (iter
-                       (for day in *weekdays*)
-                       (collect (mapcar (fn (meal) (when (apple-notes meal) (format-meal day meal)))
-                                        (gethash day meals))
-                         into result)
-                       (finally (return (format nil "~&~a~a"
-                                                (xml-header "Herwig Cooks")
-                                                (xml-unordered-list (remove nil (alexandria:flatten result)))))))))
-        (inferior-shell:run (format nil "osascript \"Set Body of Note.scpt\" \"~a\" \"~a\"" note-id content))))))
+  (with-accessors ((meals meals)) mealplan
+    (let ((content (iter
+                     (for day in *weekdays*)
+                     (collect (mapcar (fn (meal) (when (apple-notes meal) (format-meal day meal)))
+                                      (gethash day meals))
+                       into result)
+                     (finally (return (format nil "~&~a~a"
+                                              (xml-header "Herwig Cooks")
+                                              (xml-unordered-list (remove nil (alexandria:flatten result)))))))))
+      (set-body-of-apple-note content note-id))))
 
 
 (defun add-mp-to-omnifocus (mealplan)
