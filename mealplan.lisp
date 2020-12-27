@@ -64,8 +64,8 @@ Assums `day' is a keyword for a weekday."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-(defun meal-format-for-apple-note (day meal)
-  (format nil "~a: ~a" (str:title-case (string day))
+(defun meal-format-for-apple-note (day-of-week meal)
+  (format nil "~a: ~a" (str:title-case (string day-of-week))
           (case (kind meal)
             (:lunch "Cooks Lunch")
             (:dinner "Cooks Dinner")
@@ -76,15 +76,14 @@ Assums `day' is a keyword for a weekday."
   "Adds the mealplan to the Apple Note specified by `note-id'
 
 The days are in order, i.e. Monday comes before Tuesday, etc."
-  (with-accessors ((meals meals)) mealplan
-    (let ((content (iter
-                     (for day in *weekdays*)
-                     (collect (mapcar (fn (meal) (when (apple-notes meal) (meal-format-for-apple-note day meal)))
-                                      (gethash day meals))
-                       into result)
-                     (finally (return (format nil "~&~a~%"
-                                              (xml-unordered-list (remove nil (alexandria:flatten result)))))))))
-      (set-body-of-apple-note content note-id))))
+  (let ((content (iter
+                   (for (day-of-week meals) in-hashtable (meals mealplan))
+                   (collect (mapcar (fn (meal) (when (apple-notes meal) (meal-format-for-apple-note day-of-week meal)))
+                                    meals)
+                     into result)
+                   (finally (return (format nil "~&~a~%"
+                                            (xml-unordered-list (remove nil (alexandria:flatten result)))))))))
+    (set-body-of-apple-note content note-id)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
