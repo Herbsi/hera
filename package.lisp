@@ -5,6 +5,7 @@
   #+sb-package-locks
   (:lock t)
   (:import-from #:alexandria
+                #:compose
                 #:mappend
                 #:with-gensyms)
   (:import-from #:defclass-std
@@ -16,4 +17,4 @@
   (:shadowing-import-from #:new-let
                           #:let)
   (:export
-   #:make-recipe))
+   #:hera))

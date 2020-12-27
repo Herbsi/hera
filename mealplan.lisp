@@ -54,10 +54,15 @@ Assums `day' is a keyword for a weekday."
 
 
 (defun collect-ingredients (mealplan)
-  "Collects all ingredients into a list"
-  ;; TODO
-  nil
-  )
+  "Collects all ingredients into a list and returns it" 
+  (mappend (compose #'ingredients #'recipe)
+           (iter
+             (for (nil meals) in-hashtable (meals mealplan))
+             ;; take each recipe only once, even if it lasts for multiple days
+             ;; I never cook the same recipe twice in a week
+             (unioning meals :test (fn (meal-1 meal-2)
+                                     (string= (name (recipe meal-1))
+                                              (name (recipe meal-2))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                                         ;  Adding the Mealplan to Apple Notes ;
