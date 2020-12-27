@@ -36,8 +36,8 @@ into a list of (add-meal (make-meal <meal> args) <day>) function calls."
         ,mealplan ,*omnifocus-project*)
        (append-list-to-file ,*tmp-file*
         (collect-ingredients ,mealplan))
-       (format t "~&Edit ~a and press Enter once done~%> ~%" ,*tmp-file*)
+       (format t "~&Edit ~a and press Enter once done~%> " ,*tmp-file*)
        (read-line)
        (mapc (fn (item) (add-item-to-reminders item ,*reminders-list*))
-             (read-list-from-file)))))
+             (read-list-from-file ,*tmp-file*)))))
 
