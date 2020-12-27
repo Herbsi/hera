@@ -4,6 +4,11 @@
 
 (defconstant *weekdays* '(:monday :tuesday :wednesday :thursday :friday :saturday :sunday))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                                        ;           Meal & Mealplan           ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
 (defclass/std mealplan ()
   ((meals :std (make-hash-table :test #'eq))))
 
@@ -43,11 +48,20 @@ Assums `day' is a keyword for a weekday."
           (cons meal (gethash day meals)))))
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                                        ;  Adding Ingredients to Reminders/OF ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
 (defun collect-ingredients (mealplan)
   "Collects all ingredients into a list"
   ;; TODO
   nil
   )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                                        ;  Adding the Mealplan to Apple Notes ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 (defun format-meal-for-apple-note (day meal)
@@ -74,6 +88,35 @@ The days are in order, i.e. Monday comes before Tuesday, etc."
       (set-body-of-apple-note content note-id))))
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                                        ;        Adding Mealplan to OF        ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(defun next-ISO-day (day-of-week)
+  "Returns the next date that is a `day-of-week' as an yyyy-mm-dd strin
+
+If `day-of-week' is the same as today, *next week’s* `day-of-week' is returned,
+i.e. if it’s Sun, Dec 27 2020; then (next-ISO-day :sunday) => \"2021-01-03\""
+  (let* ((timestamp-day-of-week-lookup (alexandria:alist-hash-table '((0 . :sunday)
+                                                                      (1 . :monday)
+                                                                      (2 . :tuesday)
+                                                                      (3 . :wednesday)
+                                                                      (4 . :thursday)
+                                                                      (5 . :friday)
+                                                                      (6 . :saturday))))
+         (today (local-time:today))
+         (today-day-of-week (gethash (local-time:timestamp-day-of-week today) timestamp-day-of-week-lookup))
+         ;; We want the *next* `day-of-week'
+         ;; offset :day-of-week `day-of-week' gives us the previous, between 1 & 7 days back
+         ;; i.e. if it’s sunday, thet (adjust-timestamp (today) (offset :day-of-week :sunday)) => previous sunday
+         ;; so in that case, we add 14 days, otherwise we just add 7
+         (adjusted-date (local-time:adjust-timestamp today (offset :day-of-week day-of-week)
+                          (offset :day (if (eq today-day-of-week day-of-week) 14 7)))))
+    (local-time:format-timestring nil adjusted-date :format '(:year #\-
+                                                              (:month 2 #\0) #\-
+                                                              (:day 2 #\0)))))
+  
 (defun add-mp-to-omnifocus (mealplan)
   ;; TODO
   nil
