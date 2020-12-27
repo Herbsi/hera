@@ -82,8 +82,7 @@ The days are in order, i.e. Monday comes before Tuesday, etc."
                      (collect (mapcar (fn (meal) (when (apple-notes meal) (meal-format-for-apple-note day meal)))
                                       (gethash day meals))
                        into result)
-                     (finally (return (format nil "~&~a~a"
-                                              (xml-header "Herwig Cooks")
+                     (finally (return (format nil "~&~a~%"
                                               (xml-unordered-list (remove nil (alexandria:flatten result)))))))))
       (set-body-of-apple-note content note-id))))
 
