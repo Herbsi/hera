@@ -43,7 +43,7 @@ into a list of (add-meal (make-meal <meal> args) <day>) function calls."
 
 
 (defmacro hera (&body body)
-  (with-gensyms (mealplan)
+  (with-gensyms (mealplan item)
     `(let ((,mealplan (make-mealplan)))
        (handler-bind ((file-error #'deal-with-file-error))
          ,@(mappend (fn (day-list) (transform-day day-list mealplan))
@@ -55,5 +55,5 @@ into a list of (add-meal (make-meal <meal> args) <day>) function calls."
        (append-list-to-file ,*tmp-file* (collect-ingredients ,mealplan))
        (format t "~&Edit ~a and press Enter once done~%> " ,*tmp-file*)
        (read-line)
-       (mapc (fn (item) (add-item-to-reminders item ,*reminders-list*))
-             - (read-list-from-file ,*tmp-file*)))))
+       (mapc (fn (,item) (add-item-to-reminders ,item ,*reminders-list*))
+             (read-list-from-file ,*tmp-file*)))))
