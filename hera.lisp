@@ -14,9 +14,12 @@
 (add-meal (make-meal <meal> args) mealplan day) list for adding
 the meal to the mealplan."
   (with-gensyms (meal)
-    `(let ((,meal (make-meal ,@meal-list)))
-       (unless (eq ,meal :skipped)
-         (add-meal ,meal ,mealplan ,day)))))
+    (flet ((prepend-recipe-root (filename)
+             (cl-fad:merge-pathnames-as-file *recipe-root* filename)))
+      `(let ((,meal (make-meal ,@(cons (prepend-recipe-root (first meal-list))
+                                       (rest meal-list)))))
+         (unless (eq ,meal :skipped)
+           (add-meal ,meal ,mealplan ,day))))))
 
 
 (defun transform-day (day-list mealplan)
