@@ -13,7 +13,10 @@
 
 (add-meal (make-meal <meal> args) mealplan day) list for adding
 the meal to the mealplan."
-  `(add-meal (make-meal ,@meal-list) ,mealplan ,day))
+  (with-gensyms (meal)
+    `(let ((,meal (make-meal ,@meal-list)))
+       (unless (eq ,meal :skipped)
+         (add-meal ,meal ,mealplan ,day)))))
 
 
 (defun transform-day (day-list mealplan)
@@ -25,19 +28,29 @@ into a list of (add-meal (make-meal <meal> args) <day>) function calls."
             (rest day-list))))
 
 
+(defun deal-with-file-error (condition)
+  "Asks user for a new filename fore recipe or to skip the recipe all together."
+  (format *error-output* "~&Error! ~s does not exist~% Enter a new filename or press return to skip this meal.~%"
+          (file-error-pathname condition))
+  (format *query-io* "~&> ")
+  (let ((user-input (read *query-io*)))
+    (if (str:empty? user-input)
+        (invoke-restart 'return-value :skipped)
+        (invoke-restart 'retry-filename user-input))))
+
+
 (defmacro hera (&body body)
   (with-gensyms (mealplan)
     `(let ((,mealplan (make-mealplan)))
-       ,@(mappend (fn (day-list) (transform-day day-list mealplan))
-                  body)
+       (handler-bind ((file-error #'deal-with-file-error))
+         ,@(mappend (fn (day-list) (transform-day day-list mealplan))
+                    body))
        (mealplan-add-to-apple-notes
         ,mealplan ,*apple-notes-id*)
        (mealplan-add-to-omnifocus
         ,mealplan ,*omnifocus-project*)
-       (append-list-to-file ,*tmp-file*
-        (collect-ingredients ,mealplan))
+       (append-list-to-file ,*tmp-file* (collect-ingredients ,mealplan))
        (format t "~&Edit ~a and press Enter once done~%> " ,*tmp-file*)
        (read-line)
        (mapc (fn (item) (add-item-to-reminders item ,*reminders-list*))
-             (read-list-from-file ,*tmp-file*)))))
-
+             - (read-list-from-file ,*tmp-file*)))))

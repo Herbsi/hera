@@ -31,7 +31,6 @@ removes leading ‘*’:
 (defun make-recipe (recipe-path)
   "Creates a recipe object from the recipe at `recipe-path'"
   (when-let ((recipe-string (restart-case (uiop:read-file-string recipe-path)
-                              (use-nil () nil)
                               (retry-filename (filename)
                                 (uiop:read-file-string
                                  (substitute-filename recipe-path filename))))))

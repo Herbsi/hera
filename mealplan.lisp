@@ -20,15 +20,16 @@
    (devonthink :ri)))
 
 
-(defun make-meal (recipe-filename &key (kind :lunch) (apple-notes t) (devonthink nil))
-  "Takes a meal line and returns a meal object based on it."
+(defun make-meal (recipe-pathname &key (kind :lunch) (apple-notes t) (devonthink nil))
+  "Creates an instance of `meal'.  Allows for the caller to specify a special return value
+via (invoke-restart 'return-value value)"
   (assert (member kind '(:lunch :dinner :bake)))
-  (make-instance 'meal
-                 :recipe (make-recipe
-                          (cl-fad:merge-pathnames-as-file *recipe-root* recipe-filename))
-                 :kind kind
-                 :apple-notes apple-notes
-                 :devonthink devonthink))
+  (restart-case (make-instance 'meal
+                               :recipe (make-recipe recipe-pathname)
+                               :kind kind
+                               :apple-notes apple-notes
+                               :devonthink devonthink)
+    (return-value (value) value)))
 
 
 (defun make-mealplan ()
