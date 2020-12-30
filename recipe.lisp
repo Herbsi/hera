@@ -4,7 +4,6 @@
 
 (defclass/std recipe ()
   ((name :ri)
-   (filename :ri)
    (ingredients :ri)))
 
 
@@ -31,7 +30,19 @@ removes leading ‘*’:
 
 (defun make-recipe (recipe-path)
   "Creates a recipe object from the recipe at `recipe-path'"
-  (let ((recipe-string (uiop:read-file-string recipe-path)))
+  (when-let ((recipe-string (restart-case (uiop:read-file-string recipe-path)
+                              (use-nil () nil)
+                              (retry-filename (filename)
+                                (uiop:read-file-string
+                                 (substitute-filename recipe-path filename))))))
     (make-instance 'recipe :name (extract-title recipe-string)
-                           :ingredients (extract-ingredients recipe-string)
-                           :filename (file-namestring recipe-path))))
+                           :ingredients (extract-ingredients recipe-string))))
+
+
+(defun substitute-filename (pathname filename)
+  "Returns a new path that corresponds to `pathname', but ending in `filename' instead,
+
+i.e. (replace-filename (#P\"/foo/bar\" \"baz\") => #P\"/foo/baz\""
+
+  (cl-fad:merge-pathnames-as-file (uiop:pathname-directory-pathname pathname)
+                                  filename))

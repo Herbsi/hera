@@ -5,6 +5,7 @@
   #+sb-package-locks
   (:lock t)
   (:import-from #:alexandria
+                #:when-let
                 #:compose
                 #:mappend
                 #:with-gensyms)
